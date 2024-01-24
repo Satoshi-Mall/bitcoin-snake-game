@@ -29,6 +29,5 @@ Now you can navigate to `npm run start`
 - move all constants to config
 - add some sounds
 - make deposit changeable
-- adding satoshis instead of scores
 - track player score/satoshis. 
 - add final score board
