@@ -15,8 +15,9 @@ export class LightingNetworkProviderService {
   authHeader: HttpHeaders | { [header: string]: string | string[]; } | undefined;
 
   constructor(private http: HttpClient) {
-    this.baseUrl = `http://100.92.21.29:3007`;
-    this.authHeader = { "X-API-KEY": "d42afac81d21466896f8aea9fd8075ff" }
+    //TODO: move to config
+    this.baseUrl = `SERVER_URL_HERE`;
+    this.authHeader = { "X-API-KEY": "X-API-KEY-HERE" }
   }
 
   generateDepositInvoice(amount: number = 30): Observable<Invoice> {

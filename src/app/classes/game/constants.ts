@@ -1,8 +1,7 @@
 
-const WIDTH = 70; // number of squares vertical
-const HEIGHT = 35; // number of squares horizontal
-const CELLSIZE = 20; // size of one square
-const SCALE = 2.0; // draw everything twice as big and make it smaller to get clean lines even on a retina screen
+const NCELLSX = 70; // number of squares vertical
+const NCELLSY = 35; // number of squares horizontal
+const SCALE = 2; // draw everything twice as big and make it smaller to get clean lines even on a retina screen
 const SPEED = 100; // initial speed
 const MAX_LEVEL = 2;
 const APPLES = 5;
@@ -23,9 +22,8 @@ const COLORS = [
 
 export {
     COLORS,
-    WIDTH,
-    HEIGHT,
-    CELLSIZE,
+    NCELLSX,
+    NCELLSY,
     SCALE,
     SPEED,
     MAX_LEVEL,

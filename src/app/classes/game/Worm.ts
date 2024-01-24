@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Direction } from "./Direction";
 import { Game } from "./Game";
-import { CELLSIZE, SCALE } from "./constants";
+import { SCALE } from "./constants";
 
 export class Worm {
 
@@ -74,10 +74,10 @@ export class Worm {
     }
 
     draw(context: CanvasRenderingContext2D) {
-        const { cellWidth, cellHeight } = this.game.getConfiguration();
+        const { cellWidth, cellHeight, cellSizeX } = this.game.getConfiguration();
         // head
-        const size = CELLSIZE * SCALE / 10;
-        const offset = CELLSIZE * SCALE / 3;
+        const size = cellSizeX * SCALE / 10;
+        const offset = cellSizeX * SCALE / 3;
         const x = cellWidth * this.head.x;
         const y = cellHeight * this.head.y;
         context.fillStyle = "#111111";

@@ -8,4 +8,6 @@ export interface Configuration {
     cellWidth: number;
     cellHeight: number;
     color: string;
+    cellSizeX: number;
+    cellSizeY: number;
 }

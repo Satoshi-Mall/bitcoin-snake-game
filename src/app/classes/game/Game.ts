@@ -3,7 +3,7 @@ import { Cell } from "./Cell";
 import { Configuration } from "./Configuration";
 import { Grid } from "./Grid";
 import { Worm } from "./Worm";
-import { CELLSIZE, COLORS, HEIGHT, MAX_LEVEL, SCALE, SPEED, WIDTH } from "./constants";
+import { COLORS, NCELLSX, MAX_LEVEL, SCALE, SPEED, NCELLSY } from "./constants";
 
 
 export class Game {
@@ -22,14 +22,21 @@ export class Game {
         this.gamePlayProviderService = gamePlayProviderService;
         this.canvas = document.createElement('Canvas') as HTMLCanvasElement;
         document.body.appendChild(this.canvas);
+        const clientWidth = document.documentElement.clientWidth;
+        const clientHeight = document.documentElement.clientHeight;
 
+        const cellSizeX = Math.floor(clientWidth / NCELLSX);
+        const cellSizeY = Math.floor(clientHeight / NCELLSY);
+
+        const width = NCELLSX * cellSizeX
+        const height = NCELLSY * cellSizeY
         // canvas element size in the page
-        this.canvas.style.width = WIDTH * CELLSIZE + 'px';
-        this.canvas.style.height = HEIGHT * CELLSIZE + 'px';
+        this.canvas.style.width = width + 'px';
+        this.canvas.style.height = height + 'px';
 
         // image buffer size 
-        this.canvas.width = WIDTH * CELLSIZE * SCALE;
-        this.canvas.height = HEIGHT * CELLSIZE * SCALE;
+        this.canvas.width = width * SCALE;
+        this.canvas.height = height * SCALE;
 
         // configuration
         this.configuration = {
@@ -37,11 +44,13 @@ export class Game {
             speed: SPEED,
             width: this.canvas.width,
             height: this.canvas.height,
-            nbCellsX: WIDTH,
-            nbCellsY: HEIGHT,
-            cellWidth: this.canvas.width / WIDTH,
-            cellHeight: this.canvas.height / HEIGHT,
-            color: COLORS[0]
+            nbCellsX: NCELLSX,
+            nbCellsY: NCELLSY,
+            cellWidth: this.canvas.width / NCELLSX,
+            cellHeight: this.canvas.height / NCELLSY,
+            color: COLORS[0],
+            cellSizeX: cellSizeX,
+            cellSizeY: cellSizeY
         };
 
         this.worm = new Worm(this);
@@ -66,7 +75,7 @@ export class Game {
         this.gamePlayProviderService.onEndGame();
     }
 
-    get isRunning(): boolean{
+    get isRunning(): boolean {
         return this.running;
     }
 
@@ -94,7 +103,7 @@ export class Game {
                         break;
                     case 1:
                         this.worm.grow();
-                        this.score += 100;
+                        this.score += 10;
                         this.grid.eat(this.worm.getHead());
                         this.gamePlayProviderService.appleIsEaten();
                         if (this.grid.isDone()) {
@@ -159,7 +168,6 @@ export class Game {
     }
 
     levelUp() {
-        this.score += 1000;
         this.configuration.level++;
         if (this.configuration.level < MAX_LEVEL) {
             this.configuration.speed -= 7;
@@ -171,12 +179,12 @@ export class Game {
     }
 
     win() {
-        alert("Congrats you beat the game!\r\n\r\nFinal Score: " + this.score);
+        alert("Congrats you beat the game!");
         this.stop();
     }
 
     die() {
-        alert("You died.\r\n\r\nFinal Score: " + this.score);
+        alert("You died.");
         this.stop();
     }
 

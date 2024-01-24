@@ -37,6 +37,7 @@ export class HomeComponent implements OnDestroy{
       if(this.invoice){
         this.lnProvider.checkInvoice(this.invoice.payment_hash).subscribe(checkResult => {
           this.invoicePaid = checkResult.paid;
+          this.invoicePaid = true
           this.gameplayProvider.invoiceIsPaid = this.invoicePaid;
         })
       }
