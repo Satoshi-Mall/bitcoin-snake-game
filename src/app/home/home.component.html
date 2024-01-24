@@ -1,0 +1,28 @@
+<div class="my-5 text-center">
+    <img class="d-block mx-auto mb-4" src="assets/snake-logo.jpg" alt="" width="180" height="180">
+    <h1 class="display-5 fw-bold text-body-emphasis">Snake Game</h1>
+    <div class="col-lg-6 mx-auto">
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <div *ngIf="!invoicePaid" class="card" style="width: 18rem;">
+          <img *ngIf="invoice != null" src="{{this.invoiceQRCodeUrl}}" class="card-img-top" alt="Deposit Invoice">
+          <div class="card-body">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="card-text">Депозирай {{depositAmount}} сатошита и играй.
+               И ако спечелиш ще се удвоят.</p>
+          </div>
+        </div>
+        <div *ngIf="invoicePaid" class="card" style="width: 18rem;">
+          <div class="card-body">
+            <p class="card-text">Вкарайте вашия LN адрес</p>
+            <div class="mb-3">
+              <label for="lnAddress" class="form-label">LN адрес</label>
+              <input type="text" [(ngModel)]="playerLNAddress" class="form-control" id="lnAddress" aria-describedby="lnAddress">
+            </div>
+            <button type="button" (click)="startGame()" class="btn btn-primary">Стартирай играта!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

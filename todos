@@ -1,0 +1,10 @@
+make multiplayer
+make responsive by screen dimensions
+make some animations and popups
+change order of address input and qr code 
+move all constants to config
+add some sounds
+make deposit changable
+adding satoshis instead of scores
+track player score/satoshis. 
+add final score board
