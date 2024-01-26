@@ -2,26 +2,24 @@ import { GamePlayProviderService } from "../../services/game-play-provider.servi
 import { Cell } from "./Cell";
 import { Configuration } from "./Configuration";
 import { Grid } from "./Grid";
-import { Worm } from "./Worm";
 import { COLORS, NCELLSX, MAX_LEVEL, SCALE, SPEED, NCELLSY } from "./constants";
 
 
-export class Game {
+export abstract class Game {
 
-    private canvas: HTMLCanvasElement;
-
-    private score: number = 0;
+    protected canvas: HTMLCanvasElement;
     private running: boolean = false;
-    private grid: Grid;
-    private worm: Worm;
-    private configuration: Configuration;
+    protected grid: Grid;
+    protected configuration: Configuration;
     private nextMove: number = 0;
     gamePlayProviderService: GamePlayProviderService;
+    protected context: CanvasRenderingContext2D | null;
 
     constructor(gamePlayProviderService: GamePlayProviderService) {
         this.gamePlayProviderService = gamePlayProviderService;
         this.canvas = document.createElement('Canvas') as HTMLCanvasElement;
         document.body.appendChild(this.canvas);
+        this.context = this.canvas.getContext("2d");
         const clientWidth = document.documentElement.clientWidth;
         const clientHeight = document.documentElement.clientHeight;
 
@@ -53,7 +51,6 @@ export class Game {
             cellSizeY: cellSizeY
         };
 
-        this.worm = new Worm(this);
         this.grid = new Grid(this);
 
         // event listeners
@@ -83,91 +80,45 @@ export class Game {
         return this.configuration;
     }
 
-    loop(time: number) {
-
+    loop(timestamp: number) {
+        if (timestamp > this.nextMove) {
+            this.nextMove = timestamp + this.configuration.speed;
+            this.move();
+            this.processState();
+        }
         if (this.running) {
-
             requestAnimationFrame(this.loop.bind(this));
-
-            if (time >= this.nextMove) {
-
-                this.nextMove = time + this.configuration.speed;
-
-                // move once
-                this.worm.move();
-
-                // check what happened  
-                switch (this.checkState()) {
-                    case -1:
-                        this.die();
-                        break;
-                    case 1:
-                        this.worm.grow();
-                        this.score += 10;
-                        this.grid.eat(this.worm.getHead());
-                        this.gamePlayProviderService.appleIsEaten();
-                        if (this.grid.isDone()) {
-                            this.levelUp();
-                        }
-                        break;
-                    default:
-                        // update display
-                        this.paint(time);
-                }
-            }
         }
     }
 
-    paint(time: number) {
+    abstract processState(): void;
+
+    abstract move(): void;
+
+    paint() {
 
         const { width, height, color, level } = this.configuration;
-        const context = this.canvas.getContext("2d");
 
-        if (context == null) return;
+        if (this.context == null) return;
         // background
-        context.fillStyle = color;
-        context.fillRect(0, 0, width, height);
+        this.context.fillStyle = color;
+        this.context.fillRect(0, 0, width, height);
 
         // level
-        context.font = height + 'px Arial';
-        context.textBaseline = 'middle';
-        context.textAlign = 'center';
-        context.fillStyle = 'rgba(0,0,0,0.1)';
-        context.fillText(`${level + 1}`, width / 2, height / 2);
+        this.context.font = height + 'px Arial';
+        this.context.textBaseline = 'middle';
+        this.context.textAlign = 'center';
+        this.context.fillStyle = 'rgba(0,0,0,0.1)';
+        this.context.fillText(`${level + 1}`, width / 2, height / 2);
 
-        // score
-        context.font = 35 * SCALE + 'px Arial';
-        context.textAlign = 'left';
-        context.textBaseline = 'top';
-        context.fillStyle = 'rgba(0,0,0,0.25)';
-        context.fillText(this.score.toString(), 10 * SCALE, 10 * SCALE);
-
-        // grid
-        this.grid.draw(context);
-        // worm
-        this.worm.draw(context);
+        this.drawStats();
+        this.grid.draw(this.context);
+        this.drawPlayer();
     }
+    abstract drawPlayer(): void;
+    abstract drawStats(): void;
 
-    checkState() {
-
-        const cell = this.worm.getHead();
-
-        // left the play area or ate itself?? 
-        if (this.isOutside(cell) || this.worm.isWorm(cell)) {
-            // dead
-            return -1;
-        }
-
-        // ate apple?
-        if (this.grid.isApple(cell)) {
-            return 1;
-        }
-
-        // nothing special
-        return 0;
-    }
-
-    levelUp() {
+    levelUp() {//todo refactor
         this.configuration.level++;
         if (this.configuration.level < MAX_LEVEL) {
             this.configuration.speed -= 7;
@@ -193,38 +144,23 @@ export class Game {
         return cell.x < 0 || cell.x >= nbCellsX || cell.y < 0 || cell.y >= nbCellsY;
     }
 
-    onKeyDown(event: KeyboardEvent) {
-        switch (event.key) {
-            case 'ArrowUp':
-                event.preventDefault();
-                this.worm.setDirection('Up');
-                break;
-            case 'ArrowDown':
-                event.preventDefault();
-                this.worm.setDirection('Down');
-                break;
-            case 'ArrowLeft':
-                event.preventDefault();
-                this.worm.setDirection('Left');
-                break;
-            case 'ArrowRight':
-                event.preventDefault();
-                this.worm.setDirection('Right');
-                break;
-        }
+    abstract handleUserInput(event: KeyboardEvent):void;
+
+    onKeyDown(event: KeyboardEvent) {//todo refactor
+        this.handleUserInput(event);
     }
     //@ts-ignore
-    onTouchStart(e) {
+    onTouchStart(e) {//todo refactor
         //@ts-ignore
         this.touch = e.changedTouches[0];
         e.preventDefault();
     }
     //@ts-ignore
-    onTouchMove(e) {
+    onTouchMove(e) {//todo refactor
         e.preventDefault();
     }
     //@ts-ignore
-    onTouchEnd(e) {
+    onTouchEnd(e) {//todo refactor
 
         const touch = e.changedTouches[0];
         //@ts-ignore

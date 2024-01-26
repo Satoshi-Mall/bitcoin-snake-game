@@ -3,6 +3,7 @@ import { Game } from '../classes/game/Game';
 import { Subscription, of } from 'rxjs';
 import { GamePlayProviderService } from '../services/game-play-provider.service';
 import { Router } from '@angular/router';
+import { SinglePlayerGame } from '../classes/game/SinglePlayerGame';
 
 @Component({
   selector: 'app-game',
@@ -28,7 +29,7 @@ export class GameComponent implements OnDestroy {
       return;
     }
 
-    this.game = new Game(gameplayProvider);
+    this.game = new SinglePlayerGame(gameplayProvider);
     this.startGame();
   }
 
